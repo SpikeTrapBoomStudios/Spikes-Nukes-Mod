@@ -1,25 +1,43 @@
-# eclipse
-bin
-*.launch
-.settings
-.metadata
+# Eclipse
 .classpath
 .project
+.settings/
+bin/
 
-# idea
-out
+# IntelliJ IDEA
+.idea/
+*.iml
 *.ipr
 *.iws
-*.iml
-.idea
+out/
 
-# gradle
-build
-.gradle
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+gradle-wrapper.jar
+gradle-wrapper.properties
 
-# other
-eclipse
-run
-
-# Files from Forge MDK
+# Forge MDK
 forge*changelog.txt
+*.log
+debug/
+
+# Compiled JAR files
+*.jar
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Temporary files
+*.swp
+*.swo
+
+# Node.js dependencies (if applicable)
+node_modules/
+
+# Python files (if applicable)
+*.pyc
+*.pyo
