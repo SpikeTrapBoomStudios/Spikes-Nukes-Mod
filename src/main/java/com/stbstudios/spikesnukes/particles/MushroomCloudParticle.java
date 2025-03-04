@@ -7,67 +7,73 @@ import net.minecraft.core.particles.SimpleParticleType;
 import org.jetbrains.annotations.NotNull;
 
 public class MushroomCloudParticle extends TextureSheetParticle {
-    public static int resetTick = 140;
+    //Global Stuff
+    public static int RESET_TICK = 140;
+    private int variant = 0;
+    private final double rotationAngle;
+    private final double originX;
+    private final double originY;
+    private final double originZ;
+    private double localX, localY, localZ;
+    private final double offsetX, offsetZ;
 
-    private int mpType = 0;
+    //Part A Stuff
+    private int ticksElapsed;
+
+    //Part B Stuff
     private double angle;
-    private final double xRot;
-    private final double ox;
-    private final double oy;
-    private final double oz;
-    private double px,py,pz;
-    private final double offX,offZ;
-    private int elapsedTicks;
     private double swirlRadius;
-    private double swirlInc;
+    private double swirlIncrement;
 
+    //Particle Init
     protected MushroomCloudParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz) {
+        //Vanilla Stuff
         super(level, x, y, z, 0, 0, 0);
-        this.mpType = (int) vy;
-
         this.lifetime = 2000;
         this.gravity = 0.0f;
         this.friction = 1.0f;
         this.xd = 0;
         this.yd = 0;
         this.zd = 0;
+        this.quadSize = (float) Math2.getRandomNumber(2.0, 6.5);
+        this.hasPhysics = false;
 
-        double txRot = Math.random() * 2.0 * Math.PI;
+        //Custom Stuff
+        //Yes I hacked a bit and used vx and vy as custom params in my method, but try looking up how to pass custom args to a particle...
+        //You'll see why I did what I did.
+        this.variant = (int) vy; //Variant 0 = Swirly Wirly , Variant 1 = Smoke Pillar
+        //I could implement a cool system to make the particles uniformly spread across a circle, but random is more better and funner ;)
+        double randomRotation = Math.random() * 2.0 * Math.PI; this.rotationAngle = randomRotation;
+        double radiusOffset = (variant == 1) ? 20 : 0;
 
-        double offsetRadius = 0;
-        if (mpType==1) {
-            offsetRadius = 20;
-        }
+        this.offsetZ = Math.cos(randomRotation) * radiusOffset;
+        this.offsetX = -Math.sin(randomRotation) * radiusOffset;
 
-        this.offZ = Math.cos(txRot)*offsetRadius;
-        this.offX = -Math.sin(txRot)*offsetRadius;
+        this.originX = x;
+        this.originY = y;
+        this.originZ = z;
+        this.localX = x;
+        this.localY = y;
+        this.localZ = z;
 
-        this.xRot = txRot;
-
-        this.ox = x;
-        this.oy = y;
-        this.oz = z;
-        this.px = x;
-        this.py = y;
-        this.pz = z;
-
-        if (mpType==0) {
+        //Variant Init
+        if (variant == 0) {
             this.swirlRadius = 0.3;
-            this.swirlInc = 0.025;
-            for (double i = 0; i < vx; i += swirlInc) {
-                this.py += Math.cos(i) * swirlRadius;
-                this.pz += Math.sin(i) * swirlRadius * 1.5;
+            this.swirlIncrement = 0.025;
+            for (double i = 0; i < vx; i += swirlIncrement) {
+                this.localY += Math.cos(i) * swirlRadius;
+                this.localZ += Math.sin(i) * swirlRadius * 1.5;
             }
             this.angle = vx;
-        } else if (mpType==1) {
-            for (int i=0;i<=vx;i++) {
+        } else if (variant == 1) {
+            for (int i = 0; i <= (int) vx; i++) {
                 partA();
-                this.elapsedTicks+=1;
+                this.ticksElapsed++;
             }
         }
-        this.quadSize = (float) (Math2.getRandomNumber(2.5,6.5));
-        this.hasPhysics = false;
-        this.setPos(px,py,pz);
+
+
+        this.setPos(localX, localY, localZ);
     }
 
     @Override
@@ -76,11 +82,8 @@ public class MushroomCloudParticle extends TextureSheetParticle {
     }
 
     public void partB() {
-        // Increment the swirl angle and keep it within 0 to 2π range
-        angle += swirlInc;
+        angle += swirlIncrement;
         if (angle >= 2 * Math.PI) angle -= 2 * Math.PI;
-
-        // Determine color interpolation based on the angle range
         float rStart, rEnd, gStart, gEnd, bStart, bEnd;
         if (angle < Math.PI) {
             rStart = 255; rEnd = 115;
@@ -91,102 +94,68 @@ public class MushroomCloudParticle extends TextureSheetParticle {
             gStart = 115; gEnd = 75;
             bStart = 115; bEnd = 0;
         }
-
-        // Interpolate color based on the angle
         float progress = (float) ((angle % Math.PI) / Math.PI);
         this.rCol = (rStart + progress * (rEnd - rStart)) / 255;
         this.gCol = (gStart + progress * (gEnd - gStart)) / 255;
         this.bCol = (bStart + progress * (bEnd - bStart)) / 255;
-
-        // Calculate movement based on swirl motion
         double verticalMovement = Math.cos(angle) * swirlRadius;
-        double horizontalMovement = Math.sin(angle) * swirlRadius * 1.5; // Slightly stretched swirl in z-direction
-
-        py += verticalMovement;
-        pz += horizontalMovement;
-
-        // Compute relative position adjustments
-        double relativeX = px - ox;
-        double relativeY = py - oy;
-        double relativeZ = pz - oz;
-
-        // Apply rotation transformation (around x-axis)
-        double rotatedX = relativeX * Math.cos(xRot) - relativeZ * Math.sin(xRot);
-        double rotatedZ = relativeX * Math.sin(xRot) + relativeZ * Math.cos(xRot);
-
-        // Apply additional offsets
-        rotatedX += offX;
-        rotatedZ += offZ;
-
-        // Set final particle position
-        this.setPos(ox + rotatedX, oy + relativeY, oz + rotatedZ);
+        double horizontalMovement = Math.sin(angle) * swirlRadius * 1.5;
+        localY += verticalMovement;
+        localZ += horizontalMovement;
+        double relativeX = localX - originX;
+        double relativeY = localY - originY;
+        double relativeZ = localZ - originZ;
+        double rotatedX = relativeX * Math.cos(rotationAngle) - relativeZ * Math.sin(rotationAngle);
+        double rotatedZ = relativeX * Math.sin(rotationAngle) + relativeZ * Math.cos(rotationAngle);
+        rotatedX += offsetX;
+        rotatedZ += offsetZ;
+        this.setPos(originX + rotatedX, originY + relativeY, originZ + rotatedZ);
     }
 
     public void partA() {
-        // Convert elapsed ticks into a scaled time unit
-        double timeInSeconds = (double) elapsedTicks / 20;
-
-        // Calculate particle height based on an exponential function
+        double timeInSeconds = (double) ticksElapsed / 20;
         double particleHeight = Math.pow(3, 2 * timeInSeconds - 3);
-        double previousParticleHeight = Math.pow(3, 2 * timeInSeconds - 3 - 0.1); // Offset by 1/10 for previous height
-
-        // Define color interpolation start and end values
+        double previousParticleHeight = Math.pow(3, 2 * timeInSeconds - 3 - 0.1);
         float rStart = 115, rEnd = 255;
         float gStart = 115, gEnd = 75;
         float bStart = 115, bEnd = 0;
-
-        // Interpolate colors over time based on elapsedTicks
-        float progress = (float) elapsedTicks / resetTick;
-        this.rCol = ((rStart + progress * (rEnd - rStart)) / 255);
-        this.gCol = ((gStart + progress * (gEnd - gStart)) / 255);
-        this.bCol = ((bStart + progress * (bEnd - bStart)) / 255);
-
-        // Compute directional movement based on height change
+        float progress = (float) ticksElapsed / RESET_TICK;
+        this.rCol = (rStart + progress * (rEnd - rStart)) / 255;
+        this.gCol = (gStart + progress * (gEnd - gStart)) / 255;
+        this.bCol = (bStart + progress * (bEnd - bStart)) / 255;
         double deltaX = 1.0 / 20.0;
         double deltaY = particleHeight - previousParticleHeight;
         double magnitude = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-        // Normalize and scale movement
         deltaX = (deltaX / magnitude) * 0.5;
         deltaY = (deltaY / magnitude) * 0.5;
-
-        // Update particle position along the defined path
-        py += deltaY;
-        pz -= deltaX;
-
-        // Relative position calculations for transformation
-        double relativeX = px - ox;
-        double relativeY = py - oy;
-        double relativeZ = pz - oz;
-
-        // Apply rotation transformation (around x-axis)
-        double rotatedX = relativeX * Math.cos(xRot) - relativeZ * Math.sin(xRot);
-        double rotatedZ = relativeX * Math.sin(xRot) + relativeZ * Math.cos(xRot);
-
-        // Apply additional offsets
-        rotatedX += offX;
-        rotatedZ += offZ;
-
-        // Set final particle position
-        this.setPos(ox + rotatedX, oy + relativeY, oz + rotatedZ);
+        localY += deltaY;
+        localZ -= deltaX;
+        double relativeX = localX - originX;
+        double relativeY = localY - originY;
+        double relativeZ = localZ - originZ;
+        double rotatedX = relativeX * Math.cos(rotationAngle) - relativeZ * Math.sin(rotationAngle);
+        double rotatedZ = relativeX * Math.sin(rotationAngle) + relativeZ * Math.cos(rotationAngle);
+        rotatedX += offsetX;
+        rotatedZ += offsetZ;
+        this.setPos(originX + rotatedX, originY + relativeY, originZ + rotatedZ);
     }
 
     @Override
     public void tick() {
-        if (elapsedTicks>=resetTick && mpType==1) {
-            elapsedTicks = 0;
-            this.px = ox;
-            this.py = oy;
-            this.pz = oz;
-            this.setPos(px+offX,py,pz+offZ);
+        if (ticksElapsed >= RESET_TICK && variant == 1) {
+            ticksElapsed = 0;
+            localX = originX;
+            localY = originY;
+            localZ = originZ;
+            this.setPos(localX + offsetX, localY, localZ + offsetZ);
         }
         super.tick();
-        if (mpType==0) {
+        if (variant == 0) {
             partB();
-        } else if (mpType==1) {
+        } else if (variant == 1) {
             partA();
         }
-        elapsedTicks+=1;
+        ticksElapsed++;
     }
 
     public static class Provider implements ParticleProvider<SimpleParticleType> {
