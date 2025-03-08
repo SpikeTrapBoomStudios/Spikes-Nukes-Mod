@@ -14,7 +14,7 @@ public class SpawnMushCloud {
                 level.addParticle(ModParticles.MUSHROOM_CLOUD.get(), x, y+60, z, i, 0, 0);
             }
         }
-        for (double j = 0; j<100*((double) MushroomCloudParticle.RESET_TICK/100); j+=2) {
+        for (double j = 0; j<100*((double) MushroomCloudParticle.VARIANT1_RESET_TICK /100); j+=2) {
             for (int i=0;i<14;i++) {
                 level.addParticle(ModParticles.MUSHROOM_CLOUD.get(),x,y,z,j,1,0);
             }

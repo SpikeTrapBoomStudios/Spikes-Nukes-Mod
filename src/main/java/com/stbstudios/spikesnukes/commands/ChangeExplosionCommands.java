@@ -64,7 +64,7 @@ public class ChangeExplosionCommands {
                 .then(Commands.argument("amount", IntegerArgumentType.integer())
                         .executes(commandContext -> {
 
-                            MushroomCloudParticle.RESET_TICK = IntegerArgumentType.getInteger(commandContext,"amount");
+                            MushroomCloudParticle.VARIANT1_RESET_TICK = IntegerArgumentType.getInteger(commandContext,"amount");
 
                             return 1;
                         })

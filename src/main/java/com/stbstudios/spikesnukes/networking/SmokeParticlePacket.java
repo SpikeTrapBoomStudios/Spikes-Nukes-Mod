@@ -1,9 +1,7 @@
 package com.stbstudios.spikesnukes.networking;
 
-import com.stbstudios.spikesnukes.particles.ModParticles;
 import com.stbstudios.spikesnukes.particles.SpawnMushCloud;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -29,7 +27,6 @@ public class SmokeParticlePacket {
     }
 
     public static void handle(SmokeParticlePacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
-        System.out.println("client received packet");
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
             Minecraft minecraft = Minecraft.getInstance();
