@@ -133,12 +133,9 @@ public class MushroomCloudParticle extends TextureSheetParticle {
         double relativeX = localX - originX;
         double relativeY = localY - originY;
         double relativeZ = localZ - originZ;
-        double rotatedX = relativeX * Math.cos(rotationAngle) - relativeZ * Math.sin(rotationAngle);
-        double rotatedZ = relativeX * Math.sin(rotationAngle) + relativeZ * Math.cos(rotationAngle);
-        rotatedX += offsetX;
-        rotatedZ += offsetZ;
 
-        this.setPos(originX + rotatedX, originY + relativeY, originZ + rotatedZ);
+        Vector2D rotatedXZ = Math2.rotateCoordinate2D(relativeX, relativeZ, rotationAngle).offset(offsetX, offsetZ).offset(originX, originZ);
+        this.setPos(rotatedXZ.x, originY + relativeY, rotatedXZ.y);
     }
 
     @Override
