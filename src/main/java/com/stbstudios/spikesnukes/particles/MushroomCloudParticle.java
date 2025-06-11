@@ -33,7 +33,7 @@ public class MushroomCloudParticle extends TextureSheetParticle {
         this.xd = 0;
         this.yd = 0;
         this.zd = 0;
-        this.quadSize = (float) Math2.getRandomNumber(2.0, 6.5);
+        this.quadSize = (float) Math2.getRandomNumber(5.0, 6.5);
         this.hasPhysics = false;
 
         //Custom Stuff

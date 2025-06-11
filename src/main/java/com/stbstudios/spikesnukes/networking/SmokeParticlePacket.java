@@ -31,7 +31,7 @@ public class SmokeParticlePacket {
         context.enqueueWork(() -> {
             Minecraft minecraft = Minecraft.getInstance();
             if (minecraft.level != null) {
-                SpawnMushCloud.makePillar(minecraft.level,packet.x,packet.y,packet.z,0.0,0.0,0.0);
+                SpawnMushCloud.makeMushCloud(minecraft.level,packet.x,packet.y,packet.z,0.0,0.0,0.0);
             }
         });
         context.setPacketHandled(true);
