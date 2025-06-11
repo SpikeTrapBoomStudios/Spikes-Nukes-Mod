@@ -38,16 +38,6 @@ public class ChangeExplosionCommands {
                         })
                 )
         );
-        event.getDispatcher().register(Commands.literal("setgengap")
-                .then(Commands.argument("r", IntegerArgumentType.integer())
-                        .executes(commandContext -> {
-
-                            NukeBase.generationRadiusGap = IntegerArgumentType.getInteger(commandContext,"r");
-
-                            return 1;
-                        })
-                )
-        );
         event.getDispatcher().register(Commands.literal("setangleoffset")
                 .then(Commands.argument("r", DoubleArgumentType.doubleArg())
                         .executes(commandContext -> {

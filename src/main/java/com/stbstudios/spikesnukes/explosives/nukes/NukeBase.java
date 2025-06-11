@@ -1,7 +1,6 @@
 package com.stbstudios.spikesnukes.explosives.nukes;
 
 import com.stbstudios.spikesnukes.SpikesNukesMod;
-import com.stbstudios.spikesnukes.math.Math2;
 import com.stbstudios.spikesnukes.networking.NetworkHandler;
 import com.stbstudios.spikesnukes.networking.SmokeParticlePacket;
 import net.minecraft.core.BlockPos;
@@ -24,7 +23,6 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid = SpikesNukesMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class NukeBase {
     public static int rayCountOverride = 0;
-    public static int generationRadiusGap = 50;
     public static double angleOffsetConst = 2;
     public static double poleSafetyConst = .001;
     public static float stretch = 2f;
@@ -38,19 +36,9 @@ public class NukeBase {
     private static final int MAX_RAYS_PER_TICK = 30000;
     private final HashMap<ChunkPos, HashSet<BlockPos>> blockKillQueue = new HashMap<>();
 
-    private final Queue<ExplosionRay> activeQueue = new ArrayDeque<>();
-    private final Queue<ExplosionRay> nextGenQueue = new ArrayDeque<>();
+    private final Queue<ExplosionRay> rayQueue = new ArrayDeque<>();
 
-    private int currentGeneration = 1;
     private boolean doBlockKill = false;
-
-    private final double angleOffset = Math.toRadians(angleOffsetConst);
-    private final double[][] offsets = {
-            {angleOffset, angleOffset},
-            {angleOffset, -angleOffset},
-            {-angleOffset, angleOffset},
-            {-angleOffset, -angleOffset}
-    };
 
     public NukeBase(Level level, Vec3 explosionPos, int radius, int power) {
         this.level = level;
@@ -65,7 +53,7 @@ public class NukeBase {
         } else {
             castRaySphere(35000);
         }
-        //spawnPfx();
+        spawnPfx();
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -79,18 +67,10 @@ public class NukeBase {
     public static class ExplosionRay {
         Vec3 direction;
         float power;
-        int startRadius;
-        int generation;
 
-        public ExplosionRay(Vec3 direction, float power, int startRadius, int generation) {
+        public ExplosionRay(Vec3 direction, float power) {
             this.direction = direction;
             this.power = power;
-            this.startRadius = startRadius;
-            this.generation = generation;
-        }
-
-        int getSplitRadius() {
-            return generation * generationRadiusGap;
         }
     }
 
@@ -110,14 +90,14 @@ public class NukeBase {
             double z = Math.sin(phi) * r;
 
             Vec3 direction = new Vec3(x, y, z).normalize();
-            activeQueue.add(new ExplosionRay(direction, power, 0, 1));
+            rayQueue.add(new ExplosionRay(direction, power));
         }
     }
 
     public void shootRay(ExplosionRay ray) {
         Vec3 dir = ray.direction.normalize();
-        double maxDist = radius - ray.startRadius;
-        Vec3 origin = explosionPos.add(dir.scale(ray.startRadius));
+        double maxDist = radius;
+        Vec3 origin = explosionPos;
 
         int x = (int) Math.floor(origin.x);
         int y = (int) Math.floor(origin.y);
@@ -136,31 +116,11 @@ public class NukeBase {
         double tMaxZ = ((stepZ > 0 ? (z + 1) - origin.z : origin.z - z)) * tDeltaZ;
 
         double t = 0;
-        boolean hasSplit = false;
 
         while (t <= maxDist && ray.power > 0) {
             BlockPos thisPos = new BlockPos(x, y, z);
             ChunkPos thisChunk = new ChunkPos(thisPos);
             BlockState state = level.getBlockState(thisPos);
-
-            if (!hasSplit && t >= ray.getSplitRadius()) {
-                hasSplit = true;
-                double r = dir.length();
-                double theta = Math.atan2(dir.z, dir.x);
-                double phi = Math.acos(dir.y / r);
-
-                for (double[] offset : offsets) {
-                    double newTheta = theta + offset[0] * Math2.getRandomNumber(.5,2.);
-                    double newPhi = Math.max(0, Math.min(Math.PI - 0, phi + (offset[1] * Math2.getRandomNumber(.5,2.))));
-
-                    double nx = r * Math.sin(newPhi) * Math.cos(newTheta);
-                    double ny = r * Math.cos(newPhi);
-                    double nz = r * Math.sin(newPhi) * Math.sin(newTheta);
-
-                    Vec3 newDir = new Vec3((float) nx, (float) ny, (float) nz).normalize();
-                    nextGenQueue.add(new ExplosionRay(newDir, ray.power, ray.getSplitRadius(), ray.generation + 1));
-                }
-            }
 
             if (state.getExplosionResistance(null, BlockPos.ZERO, null) <= ray.power && state.getBlock() != Blocks.AIR) {
                 HashSet<BlockPos> currentChunkSet;
@@ -253,22 +213,15 @@ public class NukeBase {
         }
 
         int processedRays = 0;
-        while (processedRays < MAX_RAYS_PER_TICK && !activeQueue.isEmpty()) {
-            ExplosionRay ray = activeQueue.poll();
+        while (processedRays < MAX_RAYS_PER_TICK && !rayQueue.isEmpty()) {
+            ExplosionRay ray = rayQueue.poll();
             shootRay(ray);
             processedRays++;
         }
 
-        if (activeQueue.isEmpty()) {
-            if (nextGenQueue.isEmpty()) {
-                System.out.println("All rays completed.");
-                doBlockKill = true;
-            } else {
-                currentGeneration++;
-                System.out.println("Starting generation " + currentGeneration);
-                activeQueue.addAll(nextGenQueue);
-                nextGenQueue.clear();
-            }
+        if (rayQueue.isEmpty()) {
+            System.out.println("All rays completed.");
+            doBlockKill = true;
         }
     }
 }
