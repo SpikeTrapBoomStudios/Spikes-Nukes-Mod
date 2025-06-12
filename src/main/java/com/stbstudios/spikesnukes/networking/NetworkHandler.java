@@ -1,6 +1,7 @@
 package com.stbstudios.spikesnukes.networking;
 
 import com.stbstudios.spikesnukes.SpikesNukesMod;
+import com.stbstudios.spikesnukes.particles.BasicExplosionParticle;
 import net.minecraft.client.particle.SmokeParticle;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
@@ -18,5 +19,6 @@ public class NetworkHandler {
     public static void register() {
         int id = 0;
         INSTANCE.registerMessage(id++, SmokeParticlePacket.class, SmokeParticlePacket::encode, SmokeParticlePacket::decode, SmokeParticlePacket::handle);
+        INSTANCE.registerMessage(id++, BasicSmokeExplosionPacket.class, BasicSmokeExplosionPacket::encode, BasicSmokeExplosionPacket::decode, BasicSmokeExplosionPacket::handle);
     }
 }

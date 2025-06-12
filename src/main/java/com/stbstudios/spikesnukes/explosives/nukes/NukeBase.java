@@ -1,6 +1,7 @@
 package com.stbstudios.spikesnukes.explosives.nukes;
 
 import com.stbstudios.spikesnukes.SpikesNukesMod;
+import com.stbstudios.spikesnukes.networking.BasicSmokeExplosionPacket;
 import com.stbstudios.spikesnukes.networking.NetworkHandler;
 import com.stbstudios.spikesnukes.networking.SmokeParticlePacket;
 import net.minecraft.core.BlockPos;
@@ -22,16 +23,14 @@ import java.util.*;
 
 @Mod.EventBusSubscriber(modid = SpikesNukesMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class NukeBase {
-    public static int rayCountOverride = 0;
-    public static double angleOffsetConst = 2;
-    public static double poleSafetyConst = .001;
     public static float stretch = 2f;
-    public static float poleCluster = .8f;
+    public static float poleCluster = .9f;
 
     protected Level level;
     protected Vec3 explosionPos;
     protected int radius;
     protected int power;
+    protected double yieldKT;
 
     private static final int MAX_RAYS_PER_TICK = 30000;
     private final HashMap<ChunkPos, HashSet<BlockPos>> blockKillQueue = new HashMap<>();
@@ -40,27 +39,36 @@ public class NukeBase {
 
     private boolean doBlockKill = false;
 
-    public NukeBase(Level level, Vec3 explosionPos, int radius, int power) {
+    public NukeBase(Level level, Vec3 explosionPos, double yieldKT) {
         this.level = level;
-        this.radius = radius;
-        this.power = power;
+        this.yieldKT = yieldKT;
         this.explosionPos = explosionPos;
+        this.power = (int) NukeBase.getExplosionPowerFromYield(this.yieldKT);
+    }
+
+    public static double getExplosionRadiusFromYield(double yieldKT) {
+        return 20.0 * Math.cbrt(yieldKT);
+    }
+    public static double getExplosionPowerFromYield(double yieldKT) {
+        return 120.0 * Math.sqrt(yieldKT);
     }
 
     public void detonate() {
-        if (rayCountOverride != 0) {
-            castRaySphere(rayCountOverride);
-        } else {
-            castRaySphere(35000);
-        }
+        this.radius = (int) getExplosionRadiusFromYield(this.yieldKT);
+        castRaySphere((int) (17.372 * this.radius * this.radius));
         spawnPfx();
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     public void spawnPfx() {
         if (level instanceof ServerLevel) {
-            NetworkHandler.INSTANCE.send(PacketDistributor.ALL.noArg(),
-                    new SmokeParticlePacket(explosionPos.x, explosionPos.y, explosionPos.z));
+            if (yieldKT >= 100.0) {
+                NetworkHandler.INSTANCE.send(PacketDistributor.ALL.noArg(),
+                        new SmokeParticlePacket(explosionPos.x, explosionPos.y, explosionPos.z));
+            } else {
+                NetworkHandler.INSTANCE.send(PacketDistributor.ALL.noArg(),
+                        new BasicSmokeExplosionPacket(explosionPos.x, explosionPos.y, explosionPos.z));
+            }
         }
     }
 
@@ -131,6 +139,8 @@ public class NukeBase {
                 }
                 currentChunkSet.add(thisPos);
                 blockKillQueue.put(thisChunk, currentChunkSet);
+            } else if (state.getBlock() == Blocks.AIR) {
+                ray.power -= .1f;
             }
 
             if (state.getFluidState().is(FluidTags.WATER)) {
@@ -215,7 +225,7 @@ public class NukeBase {
         int processedRays = 0;
         while (processedRays < MAX_RAYS_PER_TICK && !rayQueue.isEmpty()) {
             ExplosionRay ray = rayQueue.poll();
-            shootRay(ray);
+            if (ray != null) shootRay(ray);
             processedRays++;
         }
 

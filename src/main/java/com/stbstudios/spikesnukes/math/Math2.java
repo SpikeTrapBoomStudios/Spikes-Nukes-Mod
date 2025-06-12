@@ -17,5 +17,9 @@ public class Math2 {
         double rotatedY = x * Math.sin(angle) + y * Math.cos(angle);
         return new Vector2D(rotatedX, rotatedY);
     }
+
+    public static float lerp(float start, float end, float amount) {
+        return start + (end - start) * amount;
+    }
 }
 

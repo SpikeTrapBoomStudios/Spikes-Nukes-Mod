@@ -13,8 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = SpikesNukesMod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class DemonHeartDropEvent {
-    public static int radius = 100;
-    public static int power = 10000;
+    public static double yieldKT = 60;
 
     @SubscribeEvent
     public static void whenHeartDropped(ItemTossEvent event) {
@@ -23,7 +22,7 @@ public class DemonHeartDropEvent {
         Vec3 eyePos = event.getPlayer().getEyePosition();
 
         if (itemDropped.getItem() == ItemRegistry.DEMON_HEART.get()) {
-            NukeBase newNuke = new NukeBase(level, eyePos, radius, power);
+            NukeBase newNuke = new NukeBase(level, eyePos.add(new Vec3(100.,0.,0.)), yieldKT);
             newNuke.detonate();
             event.setCanceled(true);
             event.getPlayer().getInventory().add(itemDropped);
