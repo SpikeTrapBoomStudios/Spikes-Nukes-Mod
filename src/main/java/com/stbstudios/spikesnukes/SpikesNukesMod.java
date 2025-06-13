@@ -1,8 +1,11 @@
 package com.stbstudios.spikesnukes;
 
+import com.stbstudios.spikesnukes.blocks.ModBlocks;
+import com.stbstudios.spikesnukes.blocks.ModBlocksEntity;
 import com.stbstudios.spikesnukes.networking.NetworkHandler;
 import com.stbstudios.spikesnukes.particles.ModParticles;
 import com.stbstudios.spikesnukes.registry.ItemRegistry;
+import com.stbstudios.spikesnukes.sounds.ModSounds;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -20,10 +23,14 @@ public class SpikesNukesMod {
 
         ItemRegistry.ITEMS.register(bus);
         ModParticles.PARTICLES.register(bus);
+        ModSounds.register(bus);
+        ModBlocks.register(bus);
+        ModBlocksEntity.register(bus);
 
         MinecraftForge.EVENT_BUS.register(this);
     }
 
+    //CLIENT INIT
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ClientModEvents {
         @SubscribeEvent

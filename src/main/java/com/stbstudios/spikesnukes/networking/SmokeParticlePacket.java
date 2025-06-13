@@ -1,6 +1,6 @@
 package com.stbstudios.spikesnukes.networking;
 
-import com.stbstudios.spikesnukes.particles.SpawnMushCloud;
+import com.stbstudios.spikesnukes.explosives.vfx.SpawnMushCloud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;

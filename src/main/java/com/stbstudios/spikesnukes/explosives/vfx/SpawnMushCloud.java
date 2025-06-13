@@ -1,5 +1,6 @@
-package com.stbstudios.spikesnukes.particles;
+package com.stbstudios.spikesnukes.explosives.vfx;
 
+import com.stbstudios.spikesnukes.particles.ModParticles;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -42,6 +43,6 @@ public class SpawnMushCloud {
                 c++;
             }
         }
-        System.out.println("P-COUNT: " + c);
+        FlashBangScreenEffect.flash();
     }
 }

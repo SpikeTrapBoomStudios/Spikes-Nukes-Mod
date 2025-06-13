@@ -1,5 +1,6 @@
-package com.stbstudios.spikesnukes.particles;
+package com.stbstudios.spikesnukes.explosives.vfx;
 
+import com.stbstudios.spikesnukes.particles.ModParticles;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -10,5 +11,6 @@ public class SpawnExplosionCloud {
         for (double i=0;i<250;i++) {
             level.addParticle(ModParticles.BASIC_EXPLOSION_PARTICLE.get(), x, y, z, 0, 0, 0);
         }
+        FlashBangScreenEffect.flash();
     }
 }

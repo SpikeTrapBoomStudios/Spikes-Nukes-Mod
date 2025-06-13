@@ -1,0 +1,11 @@
+{
+  "nuke_explosion": {
+    "subtitles": "Big Boom from Big Bomb",
+    "sounds": [
+      {
+        "name": "spikesnukes:explosions/nuke_bomb",
+        "stream": false
+      }
+    ]
+  }
+}

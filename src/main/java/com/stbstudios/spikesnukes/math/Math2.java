@@ -21,5 +21,15 @@ public class Math2 {
     public static float lerp(float start, float end, float amount) {
         return start + (end - start) * amount;
     }
+
+    public static double lerpWithEaseIn(double start, double end, double amount) {
+        double easedValue;
+        if (amount < 1) {
+            easedValue = Math.pow(amount, 3);
+        } else {
+            easedValue = 1;
+        }
+        return start + (end - start) * easedValue;
+    }
 }
 
