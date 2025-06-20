@@ -31,7 +31,7 @@ public class MushroomCloudParticle extends TextureSheetParticle {
     //Particle Init
     protected MushroomCloudParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz) {
         super(level, x, y, z, 0, 0, 0);
-        this.lifetime = 2000;
+        this.lifetime = 15 * 20;
         this.gravity = 0.0f;
         this.friction = 1.0f;
         this.xd = 0;

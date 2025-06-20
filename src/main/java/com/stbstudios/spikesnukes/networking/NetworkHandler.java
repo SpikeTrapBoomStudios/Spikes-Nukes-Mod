@@ -20,5 +20,6 @@ public class NetworkHandler {
         int id = 0;
         INSTANCE.registerMessage(id++, SmokeParticlePacket.class, SmokeParticlePacket::encode, SmokeParticlePacket::decode, SmokeParticlePacket::handle);
         INSTANCE.registerMessage(id++, BasicSmokeExplosionPacket.class, BasicSmokeExplosionPacket::encode, BasicSmokeExplosionPacket::decode, BasicSmokeExplosionPacket::handle);
+        INSTANCE.registerMessage(id++, ShockwaveSfxPacket.class, ShockwaveSfxPacket::encode, ShockwaveSfxPacket::decode, ShockwaveSfxPacket::handle);
     }
 }

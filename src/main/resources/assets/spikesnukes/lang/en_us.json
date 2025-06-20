@@ -1,4 +1,7 @@
 {
   "item.spikesnukes.demon_heart": "Demon Heart",
-  "block.spikesnukes.fat_man_block": "Fat Man Block"
+  "item.spikesnukes.detonator": "Detonator",
+
+  "block.spikesnukes.fat_man_block": "Fat Man Block",
+  "block.spikesnukes.radioactive_waste": "Radioactive Waste"
 }

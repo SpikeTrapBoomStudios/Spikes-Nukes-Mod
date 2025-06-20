@@ -14,6 +14,7 @@ public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, SpikesNukesMod.MOD_ID);
 
     public static final RegistryObject<Block> FAT_MAN_NUKE = BLOCKS.register("fat_man_block", FatManNuke::new);
+    public static final RegistryObject<Block> RADIOACTIVE_WASTE = BLOCKS.register("radioactive_waste", RadioactiveWaste::new);
 
     public static void register(IEventBus eventBus) {
         BLOCKS.register(eventBus);

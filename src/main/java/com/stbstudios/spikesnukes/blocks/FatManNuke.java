@@ -27,7 +27,7 @@ public class FatManNuke extends Block implements EntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return null;
+        return ModBlocksEntity.FAT_MAN_NUKE_BE.get().create(blockPos, blockState);
     }
 
     @Override

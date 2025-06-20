@@ -1,0 +1,6 @@
+{
+  "parent":"minecraft:item/generated",
+  "textures": {
+    "layer0": "spikesnukes:item/fat_man_tex"
+  }
+}

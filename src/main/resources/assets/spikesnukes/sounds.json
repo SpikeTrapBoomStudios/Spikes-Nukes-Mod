@@ -1,11 +1,14 @@
 {
   "nuke_explosion": {
-    "subtitles": "Big Boom from Big Bomb",
+    "subtitle": "Big Boom from a Big Bomb",
     "sounds": [
-      {
-        "name": "spikesnukes:explosions/nuke_bomb",
-        "stream": false
-      }
+        "spikesnukes:explosions/nuke_bomb"
+    ]
+  },
+  "button_click": {
+    "subtitle": "Click",
+    "sounds": [
+        "spikesnukes:button_click"
     ]
   }
 }

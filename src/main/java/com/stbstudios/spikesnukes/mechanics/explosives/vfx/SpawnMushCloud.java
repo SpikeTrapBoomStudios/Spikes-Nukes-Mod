@@ -1,4 +1,4 @@
-package com.stbstudios.spikesnukes.explosives.vfx;
+package com.stbstudios.spikesnukes.mechanics.explosives.vfx;
 
 import com.stbstudios.spikesnukes.particles.ModParticles;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -43,6 +43,6 @@ public class SpawnMushCloud {
                 c++;
             }
         }
-        FlashBangScreenEffect.flash();
+        //FlashBangScreenEffect.flash();
     }
 }

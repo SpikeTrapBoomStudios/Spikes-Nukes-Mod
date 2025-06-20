@@ -2,7 +2,7 @@ package com.stbstudios.spikesnukes.commands;
 
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.stbstudios.spikesnukes.SpikesNukesMod;
-import com.stbstudios.spikesnukes.events.DemonHeartDropEvent;
+import com.stbstudios.spikesnukes.blocks.FatManNukeBE;
 import net.minecraft.commands.Commands;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -17,7 +17,7 @@ public class ChangeExplosionCommands {
                 .then(Commands.argument("kt", DoubleArgumentType.doubleArg())
                         .executes(commandContext -> {
 
-                            DemonHeartDropEvent.yieldKT = DoubleArgumentType.getDouble(commandContext,"kt");
+                            FatManNukeBE.yieldKT = (float) DoubleArgumentType.getDouble(commandContext,"kt");
 
                             return 1;
                         })

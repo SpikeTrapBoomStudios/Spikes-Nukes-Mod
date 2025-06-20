@@ -1,6 +1,6 @@
 package com.stbstudios.spikesnukes.networking;
 
-import com.stbstudios.spikesnukes.explosives.vfx.SpawnExplosionCloud;
+import com.stbstudios.spikesnukes.mechanics.explosives.vfx.SpawnExplosionCloud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;

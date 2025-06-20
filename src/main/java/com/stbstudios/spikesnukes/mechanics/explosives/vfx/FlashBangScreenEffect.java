@@ -1,4 +1,4 @@
-package com.stbstudios.spikesnukes.explosives.vfx;
+package com.stbstudios.spikesnukes.mechanics.explosives.vfx;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.stbstudios.spikesnukes.SpikesNukesMod;
@@ -6,6 +6,7 @@ import com.stbstudios.spikesnukes.math.Math2;
 import com.stbstudios.spikesnukes.sounds.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
@@ -26,8 +27,9 @@ public class FlashBangScreenEffect {
         if (Minecraft.getInstance().player != null) {
             Vec3 playerPos = Minecraft.getInstance().player.position();
             if (Minecraft.getInstance().level != null) {
-                Minecraft.getInstance().level.playLocalSound(playerPos.x,playerPos.y,playerPos.z,
-                        ModSounds.NUKE_EXPLOSION.get(), SoundSource.BLOCKS, 1f, 1f, false);
+                Minecraft.getInstance().getSoundManager().play(
+                        SimpleSoundInstance.forUI(ModSounds.NUKE_EXPLOSION.get(), 1.0F, 1.0F)
+                );
             }
         }
         flashTimer = FLASH_LIFETIME;

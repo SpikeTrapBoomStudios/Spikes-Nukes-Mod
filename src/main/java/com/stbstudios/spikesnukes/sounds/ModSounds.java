@@ -13,6 +13,7 @@ public class ModSounds {
             DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, SpikesNukesMod.MOD_ID);
 
     public static final RegistryObject<SoundEvent> NUKE_EXPLOSION = registerSoundEvents("nuke_explosion");
+    public static final RegistryObject<SoundEvent> BUTTON_CLICK = registerSoundEvents("button_click");
 
     private static RegistryObject<SoundEvent> registerSoundEvents(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(SpikesNukesMod.MOD_ID, name)));
